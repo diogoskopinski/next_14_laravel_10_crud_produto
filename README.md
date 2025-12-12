@@ -1,5 +1,5 @@
 # 🚀 Sistema CRUD Completo
-## Laravel 10 + Next.js 14 + MySQL + Docker + IA
+## Laravel 10 + Next.js 14 + MySQL + Docker
 
 Sistema completo de gerenciamento de produtos com integração de Inteligência Artificial.
 

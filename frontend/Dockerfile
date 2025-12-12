@@ -5,8 +5,8 @@ WORKDIR /app
 # Copia apenas os arquivos de dependências primeiro (para melhor cache)
 COPY package.json package-lock.json* ./
 
-# Instala dependências
-RUN npm ci --no-audit --no-fund
+# Instala dependências (usa package-lock.json exatamente)
+RUN npm ci --no-audit --no-fund --legacy-peer-deps
 
 # Copia o restante do código
 COPY . .
