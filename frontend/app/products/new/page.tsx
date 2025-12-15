@@ -130,7 +130,7 @@ export default function NewProductPage() {
                   <div className="mt-2 text-sm text-red-700">
                     <p>{error}</p>
                     <p className="mt-1 text-xs">
-                      API: {API_URL}api/products
+                      API: api/products
                     </p>
                   </div>
                 </div>
