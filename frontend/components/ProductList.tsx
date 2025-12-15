@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link';
-import { CATEGORIES } from '@/config/constants'
+import { CATEGORIES, Category } from '@/config/constants'
 import { truncateText } from '@/utils/helpers';
 import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
@@ -28,8 +28,11 @@ export default function ProductList() {
   }, [])
 
   const getCategoryName = (categoryId: string) => {
-    const category = CATEGORIES.find(cat => cat.id === categoryId);
-    return category ? category.name : categoryId;
+    if (CATEGORIES.includes(categoryId as Category)){
+      return categoryId;
+    }
+
+    return categoryId;
   };
 
   const fetchProducts = async () => {

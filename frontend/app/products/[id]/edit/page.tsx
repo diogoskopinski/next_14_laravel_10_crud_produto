@@ -113,7 +113,7 @@ export default function EditProductPage() {
             description: mockProduct.description,
             price: mockProduct.price,
             quantity: mockProduct.quantity,
-            category: mockProducts.category
+            category: mockProduct.category
           })
           setError(`API não respondeu. Mostrando dados de exemplo para produto ID: ${productId}`)
         }
@@ -125,7 +125,7 @@ export default function EditProductPage() {
           description: mockProduct.description,
           price: mockProduct.price,
           quantity: mockProduct.quantity,
-          category: mockProducts.category
+          category: mockProduct.category
         })
         setError(`Não foi possível conectar à API. Mostrando dados de exemplo.`)
       }
@@ -436,7 +436,6 @@ export default function EditProductPage() {
             <Link
               href="/products"
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-              disabled={loading}
             >
               Cancelar
             </Link>
