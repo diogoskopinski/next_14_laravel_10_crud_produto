@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { api, API_URL } from '@/lib/api'
 
 interface Product {
   id: number
@@ -70,22 +71,10 @@ export default function ProductDetailPage() {
 
       // Tenta buscar da API
       try {
-        const response = await fetch(`http://localhost:8000/api/products/${productId}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        })
+        const product = await api.products.getOne(Number(productId))
+        
+        setProduct(product)
 
-        if (response.ok) {
-          const data = await response.json()
-          setProduct(data.data || data)
-        } else {
-          // Usa mock data se API falhar
-          const mockProduct = mockProducts.find(p => p.id.toString() === productId) || mockProducts[0]
-          setProduct(mockProduct)
-          setError(`API não respondeu. Mostrando dados de exemplo.`)
-        }
       } catch (apiError) {
         // Usa mock data
         const mockProduct = mockProducts.find(p => p.id.toString() === productId) || mockProducts[0]
@@ -108,21 +97,11 @@ export default function ProductDetailPage() {
 
     try {
       setDeleting(true)
-      
-      // Tenta deletar na API
-      const response = await fetch(`http://localhost:8000/api/products/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json'
-        }
-      })
 
-      if (response.ok) {
-        alert('Produto excluído com sucesso!')
-        router.push('/products')
-      } else {
-        throw new Error('Erro ao excluir produto')
-      }
+      await api.products.delete(Number(productId))
+      alert('Produto excluído com sucesso!')
+      router.push('/products')
+
     } catch (err) {
       console.error('Erro ao excluir produto:', err)
       alert('Erro ao excluir produto. Usando simulação de exclusão.')

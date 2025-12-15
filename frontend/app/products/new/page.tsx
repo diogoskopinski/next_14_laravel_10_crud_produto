@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CATEGORIES } from '@/config/constants'
+import { api, API_URL } from '@/lib/api'
 
 interface ProductFormData {
   name: string
@@ -41,10 +42,6 @@ export default function NewProductPage() {
     setError(null)
 
     try {
-      if (!formData.name.trim()) throw new Error('Nome é obrigatório')
-      if (!formData.price || parseFloat(formData.price) <= 0) throw new Error('Preço deve ser maior que zero')
-      if (!formData.quantity || parseInt(formData.quantity) < 0) throw new Error('Quantidade não pode ser negativa')
-
       const productData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -55,41 +52,13 @@ export default function NewProductPage() {
 
       console.log('Enviando produto:', productData)
 
-      const response = await fetch('http://localhost:8000/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(productData)
-      })
+      await api.products.create(productData)
 
-      console.log('Resposta da API:', response.status)
-
-      if (!response.ok) {
-        let errorMessage = `Erro HTTP: ${response.status}`
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.message || errorMessage
-          if (errorData.errors) {
-            const validationErrors = Object.values(errorData.errors).flat().join(', ')
-            errorMessage = `Erros de validação: ${validationErrors}`
-          }
-        } catch (e) {
-          // Não conseguiu parsear JSON
-        }
-        throw new Error(errorMessage)
-      }
-
-      const result = await response.json()
-      console.log('Produto criado com sucesso:', result)
-      
       setSuccess(true)
-      
+
       setTimeout(() => {
         router.push('/products')
       }, 2000)
-
     } catch (err) {
       console.error('Erro ao criar produto:', err)
       setError(err instanceof Error ? err.message : 'Erro desconhecido ao criar produto')
@@ -161,7 +130,7 @@ export default function NewProductPage() {
                   <div className="mt-2 text-sm text-red-700">
                     <p>{error}</p>
                     <p className="mt-1 text-xs">
-                      API: http://localhost:8000/api/products
+                      API: {API_URL}api/products
                     </p>
                   </div>
                 </div>
@@ -346,7 +315,7 @@ export default function NewProductPage() {
           <div className="mt-6 pt-4 border-t border-gray-200">
             <div className="text-xs text-gray-500">
               <p className="font-medium">Informações de integração:</p>
-              <p>Endpoint: POST http://localhost:8000/api/products</p>
+              <p>Endpoint: POST {API_URL}/products</p>
               <p>Headers: Content-Type: application/json</p>
             </div>
           </div>

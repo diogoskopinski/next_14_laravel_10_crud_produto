@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CATEGORIES, Category } from '@/config/constants'
 import { truncateText } from '@/utils/helpers';
 import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { api, API_URL } from '@/lib/api'
 
 interface Product {
   id: number
@@ -41,35 +42,8 @@ export default function ProductList() {
       setError(null)
       
       // Tenta buscar da API Laravel
-      const response = await fetch('http://localhost:8000/api/products', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        mode: 'cors', // Importante para requisições entre diferentes origens
-        credentials: 'omit'
-      })
-      
-      console.log('Response status:', response.status)
-      
-      if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`)
-      }
-      
-      const data = await response.json()
-      console.log('Produtos recebidos:', data)
-      
-      if (Array.isArray(data)) {
-        setProducts(data)
-        setUsingMockData(false)
-      } else if (data.data && Array.isArray(data.data)) {
-        // Se a API retornar {data: [...]}
-        setProducts(data.data)
-        setUsingMockData(false)
-      } else {
-        throw new Error('Formato de dados inválido')
-      }
+      const data = await api.products.getAll()
+      setProducts(data)
       
     } catch (err) {
       console.error('Erro ao buscar produtos:', err)
@@ -179,7 +153,7 @@ export default function ProductList() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Carregando produtos...</p>
-          <p className="text-sm text-gray-400">Conectando à API: http://localhost:8000/api/products</p>
+          <p className="text-sm text-gray-400">Conectando à API: {API_URL}/api/products</p>
         </div>
       </div>
     )
@@ -205,7 +179,7 @@ export default function ProductList() {
                     <p className="text-xs mt-1">Para ver dados reais, certifique-se que:</p>
                     <ul className="text-xs list-disc list-inside mt-1">
                       <li>O backend Laravel está rodando (localhost:8000)</li>
-                      <li>A API está acessível (curl http://localhost:8000/api/products)</li>
+                      <li>A API está acessível (curl {API_URL}/products)</li>
                       <li>O CORS está configurado no Laravel</li>
                     </ul>
                     <button

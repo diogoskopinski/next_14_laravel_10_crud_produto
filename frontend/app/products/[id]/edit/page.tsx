@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { CATEGORIES } from '@/config/constants'
+import { api, API_URL } from '@/lib/api'
 
 interface ProductFormData {
   name: string
@@ -83,40 +84,15 @@ export default function EditProductPage() {
 
       // Primeiro tenta buscar da API
       try {
-        const response = await fetch(`http://localhost:8000/api/products/${productId}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
+        const product = await api.products.getOne(Number(productId))
+        
+        setFormData({
+          name: product.name || '',
+          description: product.description || '',
+          price: product.price?.toString() || '',
+          quantity: product.quantity?.toString() || '',
+          category: product.category || ''
         })
-
-        if (response.ok) {
-          const data = await response.json()
-          const product = data.data || data
-
-          console.log('l-96, produtos: ');
-          console.log(data.data);
-          
-          setFormData({
-            name: product.name || '',
-            description: product.description || '',
-            price: product.price?.toString() || '',
-            quantity: product.quantity?.toString() || '',
-            category: product.category || ''
-          })
-        } else {
-
-          // Se API falhar, usa mock data baseado no ID
-          const mockProduct = mockProducts.find(p => p.id.toString() === productId) || mockProducts[0]
-          setFormData({
-            name: mockProduct.name,
-            description: mockProduct.description,
-            price: mockProduct.price,
-            quantity: mockProduct.quantity,
-            category: mockProduct.category
-          })
-          setError(`API não respondeu. Mostrando dados de exemplo para produto ID: ${productId}`)
-        }
       } catch (apiError) {
         // Se erro na API, usa mock data
         const mockProduct = mockProducts.find(p => p.id.toString() === productId) || mockProducts[0]
@@ -169,33 +145,8 @@ export default function EditProductPage() {
       console.log(`Atualizando produto ${productId}:`, productData)
 
       // Tenta atualizar na API
-      const response = await fetch(`http://localhost:8000/api/products/${productId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(productData)
-      })
+      const result = await api.products.update(Number(productId), productData)
 
-      console.log('Resposta da API:', response.status)
-
-      if (!response.ok) {
-        let errorMessage = `Erro HTTP: ${response.status}`
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.message || errorMessage
-          if (errorData.errors) {
-            const validationErrors = Object.values(errorData.errors).flat().join(', ')
-            errorMessage = `Erros de validação: ${validationErrors}`
-          }
-        } catch (e) {
-          // Não conseguiu parsear JSON
-        }
-        throw new Error(errorMessage)
-      }
-
-      const result = await response.json()
       console.log('Produto atualizado com sucesso:', result)
       
       setSuccess(true)
@@ -462,7 +413,7 @@ export default function EditProductPage() {
           <div className="mt-6 pt-4 border-t border-gray-200">
             <div className="text-xs text-gray-500">
               <p className="font-medium">Informações de integração:</p>
-              <p>Endpoint: PUT http://localhost:8000/api/products/{productId}</p>
+              <p>Endpoint: PUT {API_URL}/products/{productId}</p>
               <p>Headers: Content-Type: application/json</p>
             </div>
           </div>
