@@ -1,16 +1,18 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL!
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://18.118.130.250:8000/api'
 
 export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
       ...options.headers,
     },
     ...options,
   })
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`)
+    const text = await response.text()
+    throw new Error(`API Error ${response.status}: ${text}`)
   }
 
   return response.json()

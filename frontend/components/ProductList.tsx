@@ -42,8 +42,8 @@ export default function ProductList() {
       setError(null)
       
       // Tenta buscar da API Laravel
-      const data = await api.products.getAll()
-      setProducts(data)
+      const response = await api.products.getAll()
+      setProducts(response.data ?? response)
       
     } catch (err) {
       console.error('Erro ao buscar produtos:', err)
@@ -153,7 +153,7 @@ export default function ProductList() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Carregando produtos...</p>
-          <p className="text-sm text-gray-400">Conectando à API: {API_URL}/api/products</p>
+          <p className="text-sm text-gray-400">Conectando à API: {API_URL}/products</p>
         </div>
       </div>
     )

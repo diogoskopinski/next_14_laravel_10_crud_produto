@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CATEGORIES } from '@/config/constants'
-import { api, API_URL } from '@/lib/api'
+import { api } from '@/lib/api'
 
 interface ProductFormData {
   name: string
@@ -315,7 +315,6 @@ export default function NewProductPage() {
           <div className="mt-6 pt-4 border-t border-gray-200">
             <div className="text-xs text-gray-500">
               <p className="font-medium">Informações de integração:</p>
-              <p>Endpoint: POST {API_URL}/products</p>
               <p>Headers: Content-Type: application/json</p>
             </div>
           </div>
