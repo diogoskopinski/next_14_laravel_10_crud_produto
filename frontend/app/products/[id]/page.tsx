@@ -71,21 +71,26 @@ export default function ProductDetailPage() {
 
       // Tenta buscar da API
       try {
-        const raw = await api.products.getOne(Number(productId))
+        const response = await api.products.getOne(Number(productId))
+        const raw = response.data ?? {}
 
-        const normalized: Product = {
-          id: Number(raw.id),
-          name: raw.name ?? '',
-          description: raw.description ?? '',
-          price: Number(raw.price ?? 0),
-          quantity: Number(raw.quantity ?? 0),
-          category: raw.category ?? 'Sem categoria',
-          created_at: raw.created_at ?? new Date().toISOString(),
-          updated_at: raw.updated_at ?? new Date().toISOString(),
+        if (!raw.id){
+          throw new Error('Produto inválido')
         }
 
-        console.log('API raw product:', normalized)
-        setProduct(normalized)
+        setProduct({
+          id: Number(raw.id),
+          name: String(raw.name),
+          description: String(raw.description),
+          price: Number(raw.price),
+          quantity: Number(raw.quantity),
+          category: raw.category ?? 'Sem categoria',
+          created_at: raw.created_at,
+          updated_at: raw.updated_at,
+        })
+
+        console.log('API raw product:', raw)
+        setProduct(raw)
 
       } catch (apiError) {
         // Usa mock data
