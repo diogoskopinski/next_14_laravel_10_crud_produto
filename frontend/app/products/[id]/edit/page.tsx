@@ -84,7 +84,8 @@ export default function EditProductPage() {
 
       // Primeiro tenta buscar da API
       try {
-        const product = await api.products.getOne(Number(productId))
+        const response = await api.products.getOne(Number(productId))
+        const product = response.data ?? response
         
         setFormData({
           name: product.name || '',
